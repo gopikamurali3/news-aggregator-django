@@ -1,0 +1,556 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewsAggregator</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f0f9;
+            color: #333;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: #6a4caf;
+            color: white;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .search-bar {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-bar input {
+            width: 60%;
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .logout {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .logout:hover {
+            color: #ffd966;
+        }
+        
+        /* NOTE: Removed .filter-button styles as the buttons are removed */
+
+        /* Slideshow */
+        .slideshow-container {
+            overflow: hidden;
+            max-width: 900px;
+            position: relative;
+            margin: 20px auto; /* Added margin to replace space left by buttons */
+            height: 400px;
+            max-height: 400px; 
+            border-radius: 16px;
+            box-shadow: 0px 8px 18px rgba(0, 0, 0, 0.2);
+        }
+
+        .mySlides {
+            display: none;
+            height: 100%;
+            position: relative;
+            transition: transform 1.0s ease-in-out;
+        }
+        
+        .mySlides img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .slide-heading-text {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 10px 20px;
+            box-sizing: border-box;
+        }
+
+        .slide-heading-text a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .slide-heading-text a:hover {
+            text-decoration: underline;
+        }
+
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 12px;
+            color: white;
+            font-weight: bold;
+            font-size: 22px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 50%;
+            user-select: none;
+            z-index: 10;
+        }
+
+        .prev { left: 15px; }
+        .next { right: 15px; }
+
+        .prev:hover, .next:hover {
+            background: rgba(0,0,0,0.6);
+        }
+
+        /* Categories */
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin: 60px auto;
+            max-width: 1200px;
+            padding: 0 20px;
+        }
+
+        .category {
+            background: #ffffff;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            font-size: 22px;
+            font-weight: 600;
+            color: #4a2c82;
+            box-shadow: 0px 6px 14px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, background 0.3s ease;
+            text-decoration: none;
+        }
+
+        .category:hover {
+            transform: translateY(-8px);
+            background: #f3e9ff;
+        }
+        
+
+        /* Article List Styles */
+        .article-feed {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .news-entry {
+            background: #ffffff;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .article-image-container {
+            flex: 0 0 200px;
+            max-width: 200px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .article-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .article-text {
+            flex: 1;
+        }
+
+        .article-text h3 a {
+            color: #4a2c82;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .article-text h3 a:hover {
+            color: #6a4caf;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .categories {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .categories {
+                grid-template-columns: 1fr;
+            }
+            .news-entry {
+                flex-direction: column;
+            }
+            .article-image-container {
+                flex: none;
+                max-width: 100%;
+            }
+            .article-image {
+                height: 250px;
+            }
+            .search-bar input {
+                width: 90%;
+            }
+        }
+        /* Fix header layout: keep icon on right side */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    background: #6a4caf;
+    color: white;
+    position: relative;
+}
+
+/* Menu icon styling */
+.menu-icon {
+    font-size: 26px;
+    cursor: pointer;
+    color: white;
+    transition: color 0.3s;
+}
+
+.menu-icon:hover {
+    color: #ffd966;
+}
+
+/* Sidebar menu (hidden initially) */
+.sidebar {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    top: 0;
+    right: 0;
+    background-color: #6a4caf;
+    overflow-x: hidden;
+    transition: 0.4s;
+    padding-top: 60px;
+    z-index: 1000;
+    box-shadow: -4px 0 12px rgba(0,0,0,0.3);
+}
+
+/* Sidebar links */
+.sidebar a {
+    padding: 15px 25px;
+    text-decoration: none;
+    font-size: 20px;
+    color: white;
+    display: block;
+    transition: background 0.3s, padding-left 0.3s;
+}
+.bookmark-button { /* Add a basic style for the new button */
+            display: inline-block;
+            background: #f3e9ff;
+            color: #4a2c82;
+            padding: 8px 14px;
+            border: 1px solid #4a2c82;
+            border-radius: 6px;
+            font-weight: bold;
+            text-decoration: none;
+            margin-left: 10px; /* Space it from the Read More button */
+            transition: background 0.3s;
+        }
+        .bookmark-button:hover {
+            background: #e0d3f2;
+        }
+        /* Combine actions and content */
+        .news-actions {
+            margin-top: 10px;
+        }
+.sidebar a:hover {
+    background-color: #8365d3;
+    padding-left: 35px;
+}
+
+/* Close (×) button */
+.sidebar .closebtn {
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    font-size: 36px;
+}
+
+/* Dark overlay when sidebar opens */
+.overlay {
+    display: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+    transition: 0.4s;
+}
+
+    
+    </style>
+</head>
+<body>
+
+    <header>
+    <h1>NewsAggregator</h1>
+
+    {% if user.is_authenticated %}
+    <!-- Three-line menu icon on right -->
+    <div class="menu-icon" onclick="openSidebar()">&#9776;</div>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeSidebar()">&times;</a>
+        <a href="{% url 'history' %}">History</a>
+        <a href="{% url 'bookmarks' %}">Bookmarks</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+
+    <!-- Overlay -->
+    <div id="overlay" class="overlay" onclick="closeSidebar()"></div>
+
+    {% else %}
+    <div>
+        <a href="{% url 'login' %}" class="logout">Login</a>
+        <a href="{% url 'signup' %}" class="logout">Sign Up</a>
+    </div>
+    {% endif %}
+</header>
+<script>
+    function toggleMenu() {
+        // Toggles the 'show' class to display/hide the menu
+        document.getElementById("userDropdown").classList.toggle("show");
+    }
+    // Optional: Close dropdown if user clicks outside
+    window.onclick = function(event) {
+        if (!event.target.matches('.menu-icon')) {
+            var dropdowns = document.getElementsByClassName("dropdown-menu");
+            for (let i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+    </script>
+    
+
+    </header>
+
+    <div class="slideshow-container">
+        {% for news in latest_news %}
+        <div class="mySlides fade"> 
+            <img src="{{ news.image_url }}" alt="{{ news.title }}">
+            
+            <div class="slide-heading-text">
+                <h3><a href="{% url 'news_detail' news.pk %}">{{ news.title }}</a></h3>
+            </div>
+        </div>
+        {% endfor %}
+
+        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+        <a class="next" onclick="plusSlides(1)">&#10095;</a>
+    </div>
+    <section class="categories">
+        <a href="{% url 'news_by_category' 'business' %}" class="category">Business</a>
+        <a href="{% url 'news_by_category' 'entertainment' %}" class="category">Entertainment</a>
+        <a href="{% url 'news_by_category' 'politics' %}" class="category">Politics</a>
+        <a href="{% url 'news_by_category' 'sports' %}" class="category">Sports</a>
+        <a href="{% url 'news_by_category' 'fashion' %}" class="category">Fashion</a>
+        <a href="{% url 'news_by_category' 'science' %}" class="category">Science</a>
+    </section>
+    <div class="article-feed">
+        <h2 style="text-align: center;">
+            Latest News
+        </h2>
+        
+        {% for news in news_items %}
+            <div class="news-entry">
+                <div class="article-image-container">
+                    {% if news.image_url %}
+                        <img src="{{ news.image_url }}" alt="{{ news.title }}" class="article-image">
+                    {% else %}
+                        <img src="{% static 'images/placeholder.jpg' %}" alt="No image available" class="article-image"> 
+                    {% endif %}
+                </div>
+                
+                <div class="article-text">
+                    <h3><a href="{% url 'news_detail' news.pk %}">{{ news.title }}</a>
+                   <script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    function toggleBookmark(articleId, button) {
+        const url = `/bookmark/toggle/${articleId}/`; // Your defined URL
+        
+        fetch(url, {
+            method: 'POST', // Use POST for state-changing operations
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            // 1. Update Button Text/Star
+            if (data.bookmarked) {
+                button.innerHTML = '⭐ Bookmarked';
+            } else {
+                button.innerHTML = '☆ Bookmark';
+            }
+            
+            // 2. Show Pop-up Message (Alert for simplicity)
+            alert(data.message);
+        })
+        .catch(error => {
+            console.error('Error toggling bookmark:', error);
+            alert('An error occurred. Please try again.');
+        });
+    }
+</script>
+                        {% if user.is_authenticated %}
+    <button onclick="toggleBookmark({{ news.pk }}, this)" 
+            class="bookmark-button">
+
+        {% if news.pk in bookmarked_pks %}
+            ⭐ Bookmarked
+        {% else %}
+            ☆ Bookmark
+        {% endif %}
+    </a>
+{% endif %}
+                </h3>
+                    <p>{{ news.description | safe }}</p>
+                    
+                    <small>Published: {{ news.published_at|date:"F d, Y, h:i A" }}</small>
+                </div>
+            </div>
+        {% empty %}
+            <p style="text-align: center;">No news articles were found.</p>
+        {% endfor %}
+    </div>
+    <script>
+    // --- Slideshow JavaScript ---
+    let slideIndex = 0;
+    let autoAdvanceTimer;
+    
+    // Function to handle automatic advancing and initial display
+    function showSlides(n) {
+        // Clear any existing timer to prevent multiple timers running
+        clearTimeout(autoAdvanceTimer); 
+
+        let slides = document.getElementsByClassName("mySlides");
+        
+        if (slides.length === 0) {
+            console.log("No slides found for the slideshow.");
+            return;
+        }
+
+        // 1. Calculate the new index based on the input (n)
+        if (n !== undefined) {
+            slideIndex += n; // For manual click (plusSlides)
+        } //else {
+            // For auto-advance or initial call, increment
+           // slideIndex++; 
+       // }
+
+        // 2. Handle wrap-around (boundary checks)
+        if (slideIndex >= slides.length) {slideIndex = 0} 
+        if (slideIndex < 0) {slideIndex = slides.length - 1}
+
+        // 3. Hide all and show current slide
+        for (let i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";  
+        }
+        
+        slides[slideIndex].style.display = "block";  
+        slideIndex++; 
+        // 4. Set the timer to call this function again for auto-advance
+        autoAdvanceTimer = setTimeout(showSlides, 5000); 
+    }
+    
+    // Function for manual click (Previous/Next arrows)
+    function plusSlides(n) {
+         slideIndex = slideIndex -1 + n;// Call showSlides with the increment 'n'. The internal logic will handle the rest.
+        showSlides(n); 
+    }
+    
+    // CRITICAL: Start the show ONLY after the page loads
+    window.addEventListener('load', function() {
+        // We start with slideIndex = 0, and call showSlides with no 'n'.
+        // The internal logic will immediately increment slideIndex to 1,
+        // then reset it to 0 (since 1 >= 5 and it should show the first item).
+        // Let's ensure the initial call shows the 0 index properly.
+        //slideIndex = -1; // Set to -1 so the first call to showSlides() makes it 0.
+        showSlides(0); 
+        
+       // let slides = document.getElementsByClassName("mySlides");
+        //if (slides.length > 0) {
+       //     console.log("Slideshow initialized successfully.");
+        //} else {
+            console.log("Slideshow initialization failed: No slides found.");
+        //}
+    });
+
+    // --- Service Worker Registration (Your existing code) ---
+    // ... (keep the service worker code below the main slideshow logic) ...
+</script>
+<script>
+function openSidebar() {
+    document.getElementById("sidebar").style.width = "250px";
+    document.getElementById("overlay").style.display = "block";
+}
+
+function closeSidebar() {
+    document.getElementById("sidebar").style.width = "0";
+    document.getElementById("overlay").style.display = "none";
+}
+</script>
+
+</body>
+</html>

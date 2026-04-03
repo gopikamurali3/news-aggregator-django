@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vintage Signup</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root {
+      --font-size: 16px;
+      --background: #f7f3e9;
+      --foreground: #3d2914;
+      --card: #ede4d3;
+      --card-foreground: #3d2914;
+      --primary: #8b4513;
+      --primary-foreground: #f7f3e9;
+      --muted-foreground: #6b5b47;
+      --border: rgba(61, 41, 20, 0.2);
+      --input-background: #f0e6d2;
+      --font-weight-medium: 500;
+      --font-weight-normal: 400;
+    }
+
+    body {
+      background: var(--background);
+      color: var(--foreground);
+      font-size: var(--font-size);
+    }
+
+    h1, h2, label, button, input, p {
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: var(--font-weight-medium);
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: var(--font-weight-medium);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-8">
+
+  <h1 class="text-5xl font-bold mb-12 text-center" style="color: var(--foreground);">
+    Welcome
+  </h1>
+
+  <div class="w-full max-w-md shadow-lg rounded-xl p-6"
+        style="background: var(--card); border: 2px solid var(--border);">
+
+    <h2 class="text-2xl font-semibold text-center mb-6" style="color: var(--card-foreground);">
+      Signup
+    </h2>
+
+    {% if error %}
+      <p class="text-red-600 text-center mb-4">{{ error }}</p>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="mb-4">
+        <label for="username" class="block mb-2" style="color: var(--foreground);">Username</label>
+        <input
+          id="username"
+          name="username"
+          type="text"
+          placeholder="Enter your username"
+          class="w-full px-4 py-2 rounded-lg focus:outline-none"
+          style="background: var(--input-background); border: 1px solid var(--border);"
+          required
+        />
+      </div>
+
+      <div class="mb-4">
+        <label for="password" class="block mb-2" style="color: var(--foreground);">Password</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="Enter your password"
+          class="w-full px-4 py-2 rounded-lg focus:outline-none"
+          style="background: var(--input-background); border: 1px solid var(--border);"
+          required
+        />
+      </div>
+
+      <div class="mb-6">
+        <label for="confirm-password" class="block mb-2" style="color: var(--foreground);">Confirm Password</label>
+        <input
+          id="confirm-password"
+          name="confirm_password"
+          type="password"
+          placeholder="Confirm your password"
+          class="w-full px-4 py-2 rounded-lg focus:outline-none"
+          style="background: var(--input-background); border: 1px solid var(--border);"
+          required
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="w-full py-2 px-4 rounded-lg transition"
+        style="background: var(--primary); color: var(--primary-foreground);">
+        Signup
+      </button>
+    </form>
+
+    <div class="text-center mt-4">
+      <p style="color: var(--muted-foreground);">
+        Already have an account?
+        <a href="{% url 'login' %}" style="color: var(--primary);" class="hover:underline">Login</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

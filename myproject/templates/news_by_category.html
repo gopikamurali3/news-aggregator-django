@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ category_name }} News</title> 
+    <style>
+        /* CSS remains the same, but the layout is adjusted below */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f0f9;
+        }
+        h1 {
+            color: #4a2c82;
+            margin-bottom: 20px;
+        }
+        .news-item {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .news-item .image-container {
+            /* New container for consistent sizing */
+            flex: 0 0 200px;
+            max-width: 200px;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        .news-item img {
+            width: 100%; /* Image fills its container */
+            height: 140px;
+            object-fit: cover;
+        }
+        .bookmark-button { /* Add a basic style for the new button */
+            display: inline-block;
+            background: #f3e9ff;
+            color: #4a2c82;
+            padding: 8px 14px;
+            border: 1px solid #4a2c82;
+            border-radius: 6px;
+            font-weight: bold;
+            text-decoration: none;
+            margin-left: 10px; /* Space it from the Read More button */
+            transition: background 0.3s;
+        }
+        .bookmark-button:hover {
+            background: #e0d3f2;
+        }
+        /* Combine actions and content */
+        .news-actions {
+            margin-top: 10px;
+        }
+        .news-content {
+            flex: 1;
+        }
+        .news-content h2 {
+            margin: 0 0 10px 0;
+            font-size: 22px;
+            color: #333;
+        }
+        .news-content p {
+            margin: 0 0 12px 0;
+            line-height: 1.5;
+        }
+        .read-more {
+            display: inline-block;
+            text-decoration: none;
+            background: #6a4caf;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+        .read-more:hover {
+            background: #53348c;
+        }
+        .back-home {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            background: #6a4caf;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+        .back-home:hover {
+            background: #53348c;
+        }
+        /* Responsive Adjustment */
+        @media (max-width: 768px) {
+            .news-item {
+                flex-direction: column;
+            }
+            .news-item .image-container {
+                max-width: 100%;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <a href="{% url 'index' %}" class="back-home">⬅ Back to Home</a>
+
+    <h1>{{ category_name }} News</h1>
+
+    {% for news in news_items %} 
+    <div class="news-item">
+        
+        <div class="image-container">
+            {% if news.image_url %}
+                <img src="{{ news.image_url }}" alt="{{ news.title }}">
+            {% endif %}
+        </div>
+        
+        <div class="news-content">
+            <h2>{{ news.title }}</h2>
+            <p>{{ news.description | striptags | truncatewords:30 }}</p> 
+            <a href="{% url 'news_detail' news.pk %}" class="read-more">Read More →</a>
+    <script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    function toggleBookmark(articleId, button) {
+        const url = `/bookmark/toggle/${articleId}/`; // Your defined URL
+        
+        fetch(url, {
+            method: 'POST', // Use POST for state-changing operations
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            // 1. Update Button Text/Star
+            if (data.bookmarked) {
+                button.innerHTML = '⭐ Bookmarked';
+            } else {
+                button.innerHTML = '☆ Bookmark';
+            }
+            
+            // 2. Show Pop-up Message (Alert for simplicity)
+            alert(data.message);
+        })
+        .catch(error => {
+            console.error('Error toggling bookmark:', error);
+            alert('An error occurred. Please try again.');
+        });
+    }
+</script>
+    {% if user.is_authenticated %}
+     
+    <button onclick="toggleBookmark({{ news.pk }}, this)" 
+            class="bookmark-button">
+
+        {% if news.pk in bookmarked_pks %}
+            ⭐ Bookmarked
+        {% else %}
+            ☆ Bookmark
+        {% endif %}
+</button>
+    </a>
+{% endif %}
+ </div>
+            </div>
+    </div>
+{% empty %}
+    <p>No news available in this category.</p>
+{% endfor %}
+
+
+</body>
+</html>

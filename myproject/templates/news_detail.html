@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ article.title }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f0f9; }
+        .news-container { 
+            background: #fff; 
+            padding: 40px; 
+            border-radius: 10px;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+            max-width: 800px; 
+            margin: auto; 
+        }
+        h1 { color: #4a2c82; margin-top: 0; font-size: 28px; }
+        .back-link { 
+            display: inline-block; margin-bottom: 20px; text-decoration: none;
+            background: #6a4caf; color: white; padding: 10px 16px; border-radius: 6px; 
+            font-weight: bold; transition: background 0.3s ease;
+        }
+        .back-link:hover { background: #53348c; }
+        img { 
+            max-width: 100%; border-radius: 8px; margin: 15px 0; 
+            max-height: 450px; width: 100%; object-fit: cover;
+        } 
+        .article-body p { line-height: 1.6; margin-bottom: 1em; } 
+        .text-muted { color: #888; font-size: 0.9em; margin-bottom: 25px; display: block; }
+
+        /* Styles for the NEW prominent link button */
+        .full-article-prompt {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px dashed #ddd; /* Separator */
+        }
+        .full-article-link {
+            display: block; 
+            text-decoration: none; 
+            font-weight: bold; 
+            font-size: 1.2em;
+            background: #6a4caf; 
+            color: white; 
+            padding: 15px 25px; 
+            border-radius: 8px;
+            transition: background 0.3s;
+            margin: 15px auto 0;
+            max-width: 350px;
+        }
+        .full-article-link:hover {
+            background: #53348c;
+        }
+    </style>
+</head>
+<body>
+    
+<a href="{{ back_url }}" class="back-link">{{ back_text }}</a>
+
+    <div class="news-container">
+        <h1>{{ article.title }}</h1>
+        
+        {% if article.published_at %}
+        <span class="text-muted">
+            Published: {{ article.published_at|date:"F j, Y, P" }}
+        </span>
+        {% endif %}
+
+        {% if article.image_url %}
+        <img src="{{ article.image_url }}" alt="{{ article.title }}">
+        {% endif %}
+        
+        <div class="article-body">
+            {{ article.content|default:article.description|safe }}
+        </div>
+
+        {% if article.link %}
+            <div class="full-article-prompt">
+                <p style="color: #888;">
+                    The full article is available on the original news source.
+                </p>
+                <a href="{{ article.link }}" target="_blank" rel="noopener" class="full-article-link">
+                    Read Full Original Article ↗
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

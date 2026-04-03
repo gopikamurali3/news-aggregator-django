@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NewsAggregator</title>
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Background image */
+    body {
+      background: url('https://images.unsplash.com/photo-1504711434969-e33886168f5c') no-repeat center center/cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: white;
+    }
+
+    /* Overlay for dark effect */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: 2px solid white;
+      background: transparent;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: white;
+      color: black;
+    }
+
+    .btn-primary {
+      background: #030213;
+      border-color: #030213;
+    }
+
+    .btn-primary:hover {
+      background: white;
+      color: #030213;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to NewsAggregator</h1>
+    <div class="buttons">
+       <a href="{% url 'signup' %}" class="btn btn-primary">Sign Up</a>
+      <a href="{% url 'login' %}" class="btn">Login</a>
+     <!-- <a href="{% url 'logout' %}" class="text-red-600">Logout</a>-->
+
+    </div>
+  </div>
+</body>
+</html>

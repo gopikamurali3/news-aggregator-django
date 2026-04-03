@@ -1,0 +1,140 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History - NewsAggregator</title>
+    <style>
+        /* === SAME STYLES AS HOME PAGE === */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f0f9;
+            color: #333;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: #6a4caf;
+            color: white;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .back-home {
+            background: white;
+            color: #6a4caf;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .back-home:hover {
+            background: #f3e9ff;
+            color: #4a2c82;
+        }
+
+        .article-feed {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .news-entry {
+            background: #ffffff;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .article-image-container {
+            flex: 0 0 200px;
+            max-width: 200px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .article-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .article-text {
+            flex: 1;
+        }
+
+        .article-text h3 a {
+            color: #4a2c82;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .article-text h3 a:hover {
+            color: #6a4caf;
+        }
+
+        @media (max-width: 768px) {
+            .news-entry {
+                flex-direction: column;
+            }
+            .article-image-container {
+                flex: none;
+                max-width: 100%;
+            }
+            .article-image {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="{% url 'home' %}" class="back-home">← Back to Home</a>
+    <h1> History</h1>
+    <div></div> <!-- Empty div to balance header spacing -->
+</header>
+
+<div class="article-feed">
+    <h2 style="text-align: center;">Your Viewed Articles</h2>
+
+    {% if history_list %}
+        {% for history_entry in history_list %}
+            <div class="news-entry">
+                <div class="article-image-container">
+                    {% if history_entry.article.image_url %}
+                        <img src="{{ history_entry.article.image_url }}" alt="{{ history_entry.article.title }}" class="article-image">
+                    {% else %}
+                        <img src="{% static 'images/placeholder.jpg' %}" alt="No image available" class="article-image">
+                    {% endif %}
+                </div>
+                <div class="article-text">
+                    <h3><a href="{% url 'news_detail' history_entry.article.pk %}">{{ history_entry.article.title }}</a></h3>
+                    <p>{{ history_entry.article.description|safe }}</p>
+                    <small>Viewed on: {{ history_entry.read_at|date:"F d, Y, h:i A" }}</small>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="text-align:center;">You haven’t viewed any articles yet.</p>
+    {% endif %}
+</div>
+
+</body>
+</html>
